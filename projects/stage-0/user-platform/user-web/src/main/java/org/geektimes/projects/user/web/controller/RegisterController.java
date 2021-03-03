@@ -5,6 +5,7 @@ import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.service.UserServiceImpl;
 import org.geektimes.web.mvc.controller.PageController;
 
+import javax.annotation.Resource;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 @Path("/register")
 public class RegisterController implements PageController {
 
+    @Resource(lookup = "java:comp/env", name = "jndi/userService")
     private UserServiceImpl userService;
 
     private Logger logger = Logger.getLogger(RegisterController.class.getName());
@@ -28,8 +30,6 @@ public class RegisterController implements PageController {
     @GET
     @POST
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
-        Context cxt = new InitialContext();
-        cxt.lookup("java:/comp/env/jndi/userService");
         boolean result = this.userService.register(getUserFromRequest(request));
 
         return result ? "registerSuccess.jsp" : "registerFail.jsp";
