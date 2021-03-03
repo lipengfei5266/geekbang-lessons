@@ -4,6 +4,10 @@ import org.geektimes.function.ThrowableFunction;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.Name;
+import javax.naming.spi.ObjectFactory;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -16,7 +20,7 @@ import java.util.logging.Logger;
 
 import static org.apache.commons.lang.ClassUtils.wrapperToPrimitive;
 
-public class DatabaseUserRepository implements UserRepository {
+public class DatabaseUserRepository implements UserRepository, ObjectFactory {
 
     private static Logger logger = Logger.getLogger(DatabaseUserRepository.class.getName());
 
@@ -157,5 +161,12 @@ public class DatabaseUserRepository implements UserRepository {
         preparedStatementMethodMappings.put(String.class, "setString"); //
 
 
+    }
+
+    @Override
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
+        Context cxt = new InitialContext();
+        DBConnectionManager ConnectionManager = (DBConnectionManager) cxt.lookup("java:comp/env/jndi/dbConnectionManager");
+        return new DatabaseUserRepository(ConnectionManager);
     }
 }

@@ -62,6 +62,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <mode>context</mode>
+                    <contextFile>src/main/webapp/WEB-INF/context.xml</contextFile>
+                    <contextReloadable>true</contextReloadable>
+                    <backgroundProcessorDelay>5</backgroundProcessorDelay>
+                    <path>/</path>
+                </configuration>
             </plugin>
         </plugins>
     </build>

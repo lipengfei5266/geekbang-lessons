@@ -2,6 +2,11 @@ package org.geektimes.projects.user.sql;
 
 import org.geektimes.projects.user.domain.User;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.Name;
+import javax.naming.spi.ObjectFactory;
+import javax.sql.DataSource;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -9,10 +14,11 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-public class DBConnectionManager {
+public class DBConnectionManager implements ObjectFactory {
 
     private Connection connection;
 
@@ -153,5 +159,14 @@ public class DBConnectionManager {
     static {
         typeMethodMappings.put(Long.class, "getLong");
         typeMethodMappings.put(String.class, "getString");
+    }
+
+    @Override
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
+        Context cxt = new InitialContext();
+        DataSource dataSource = (DataSource) cxt.lookup("java:comp/env/jdbc/UserPlatformDB");
+        DBConnectionManager dbConnectionManager = new DBConnectionManager();
+        dbConnectionManager.setConnection(dataSource.getConnection());
+        return dbConnectionManager;
     }
 }
